@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "wolf3d.h"
-#include <stdio.h>
 
 size_t		ft_get_time(void)
 {
@@ -73,83 +72,6 @@ void		fill_map(t_env *e)
 	}
 }
 
-
-void		calc_init_dist(t_env *e)
-{
-	if (e->ray.rot.x < 0)
-	{
-		e->step.x = -1;
-		e->dist.x = e->ray.loc.x - e->map.x;
-	}
-	else
-	{
-		e->step.x = 1;
-		e->dist.x = e->map.x + 1.0 - e->ray.loc.x;
-	}
-	if (e->ray.rot.y < 0)
-	{
-		e->step.y = -1;
-		e->dist.y = e->ray.loc.y - e->map.y;
-	}
-	else
-	{
-		e->step.y = 1;
-		e->dist.y = e->map.y + 1.0 - e->ray.loc.y;
-	}
-	e->dist.x *= e->delta_dist.x;
-	e->dist.y *= e->delta_dist.y;
-}
-
-void		calc_ray_loc_rot(t_env *e, size_t x)
-{
-	e->camera.x = 2 * x / (float)(WIN_X) - 1;
-	e->ray.loc.x = e->player.loc.x;
-	e->ray.loc.y = e->player.loc.y;
-	e->ray.rot.x = e->player.rot.x + e->plane.x * e->camera.x;
-	e->ray.rot.y = e->player.rot.y + e->plane.y * e->camera.x;
-}
-
-void		dda(t_env *e)
-{
-	size_t		hit;
-
-	hit = 0;
-	while (!hit)
-	{
-		if (e->dist.x < e->dist.y)
-		{
-			e->dist.x += e->delta_dist.x;
-			e->map.x += e->step.x;
-			e->side = 0;
-		}
-		else
-		{
-			e->dist.y += e->delta_dist.y;
-			e->map.y += e->step.y;
-			e->side = 1;
-		}
-		if (e->world[e->map.y][e->map.x] > 0)
-			hit = 1;
-	}
-	if (e->side == 0)
-		e->total_dist = (e->map.x - e->ray.loc.x + (1 - e->step.x) / 2) / e->ray.rot.x;
-	else
-		e->total_dist = (e->map.y - e->ray.loc.y + (1 - e->step.y) / 2) / e->ray.rot.y;
-}
-
-void		calc_line(t_env *e)
-{
-	int		line_height;
-
-	line_height = (int)(WIN_Y / e->total_dist);
-	e->start = -line_height / 2 + WIN_Y / 2;
-	if (e->start < 0)
-		e->start = 0;
-	e->end = line_height / 2 + WIN_Y / 2;
-	if (e->end >= WIN_Y)
-		e->end = WIN_Y - 1;
-}
-
 int			main(void)
 {
 	t_env	e;
@@ -162,5 +84,9 @@ int			main(void)
 	e.img = SDL_CreateTexture(e.rend, SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING, WIN_X, WIN_Y);
 	game_loop(&e);
+	SDL_ShowCursor(1);
+	SDL_DestroyTexture(e.img);
+	SDL_DestroyRenderer(e.rend);
+	SDL_DestroyWindow(e.win);
 	return (0);
 }

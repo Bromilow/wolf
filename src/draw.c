@@ -14,21 +14,23 @@
 
 void		redraw(t_env *e)
 {
-	clock_t		time_now;
+//	static clock_t	time_old = 0;
+//	clock_t		time_now;
 
-	time_now = clock();
-	if ((time_now - e->time_old) > e->clocks)
-	{
-		e->time_old = time_now;
+//	time_now = clock();
+//	if ((time_now - time_old) > e->clocks)
+//	{
+//		e->time_old = time_now;
 		move_player(e);
 		draw_frame(e);
-	}
+//		SDL_delay(33333);
+//	}
 }
 
 void	draw_vscan_line(t_env *e, size_t x)
 {
 	int		colour;
-	size_t	i;
+	int		i;
 	size_t	px;
 
 	if (e->world[e->map.y][e->map.x] == 1)
@@ -51,20 +53,20 @@ void	draw_vscan_line(t_env *e, size_t x)
 	while (i < e->start)
 	{
 		px = i * e->px_pitch + x * 4;
-		e->pixels[px] = 0x00000000;
+		*(int *)(e->pixels + px) = 0x00000000;
 		i++;
 	}
 	while (e->start <= e->end)
 	{
 		px = e->start * e->px_pitch + x * 4;
-		e->pixels[px] = colour;
+		*(int *)(e->pixels + px) = colour;
 		++e->start;
 	}
 	i = e->end + 1;
 	while (i < WIN_Y)
 	{
 		px = i * e->px_pitch + x * 4;
-		e-<pixels[px] = 0x00000000;
+		*(int *)(e->pixels + px) = 0x00000000;
 		i++;
 	}
 }
@@ -72,10 +74,9 @@ void	draw_vscan_line(t_env *e, size_t x)
 void		draw_frame(t_env *e)
 {
 	size_t		x;
-	int			end;
 
 	x = 0;
-	SDL_LockTexture(e->img, NULL, e->pixels, e->px_pitch);
+	SDL_LockTexture(e->img, NULL, &e->pixels, &e->px_pitch);
 	while (x < WIN_X)
 	{
 		calc_ray_loc_rot(e, x);
@@ -90,6 +91,6 @@ void		draw_frame(t_env *e)
 		++x;
 	}
 	SDL_UnlockTexture(e->img);
-	SDL_RenderCopy(w->rend, e->img, NULL, NULL);
+	SDL_RenderCopy(e->rend, e->img, NULL, NULL);
 	SDL_RenderPresent(e->rend);
 }

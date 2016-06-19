@@ -7,6 +7,7 @@
 # include <time.h>
 # include <sys/time.h>
 # include <SDL2/SDL.h>
+# include <SDL2/SDL_stdinc.h>
 
 # define WIN_X	1600
 # define WIN_Y	900
@@ -73,8 +74,8 @@ typedef struct			s_env
 	SDL_Window			*win;
 	SDL_Renderer		*rend;
 	SDL_Texture			*img;
-	void				**pixels;
-	int					*px_pitch;
+	void				*pixels;
+	int					px_pitch;
 	int					start;
 	int					end;
 	size_t				side;
@@ -91,17 +92,25 @@ typedef struct			s_env
 	clock_t				clocks;
 }						t_env;
 
-//void					init_hooks(t_env *e);
-//void					draw_frame(t_env *e);
-//size_t					ft_get_time(void);
-//void					rotate(t_env *e, float rot);
-//int						redraw(t_env *e);
+/*
+** src/main.c
+*/
+size_t					ft_get_time(void);
+void					fill_map(t_env *e);
+
+/*
+** src/dda.c
+*/
+void					calc_ray_loc_rot(t_env *e, size_t x);
+void					calc_init_dist(t_env *e);
+void					dda(t_env *e);
+void					calc_line(t_env *e);
 
 /*
 ** src/game_loop.c
 */
-int						game_loop(t_env *e);
-
+void					game_loop(t_env *e);
+void					rotate(t_env *e, float rot);
 /*
 ** src/hooks.c
 */
@@ -122,6 +131,7 @@ void					move_player(t_env *e);
 /*
 ** src/draw.c
 */
-int						redraw(t_env *e);
+void					redraw(t_env *e);
+void					draw_frame(t_env *e);
 
 #endif

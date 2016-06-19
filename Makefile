@@ -14,12 +14,11 @@ NAME		=	wolf3d
 
 SRC			=	src/main.c				\
 				src/game_loop.c			\
-				src/hooks.c				\
 				src/draw.c				\
 				src/env_init.c			\
-				src/game_loop.c			\
 				src/key_events.c		\
-				src/mouse.c
+				src/mouse.c				\
+				src/dda.c
 
 CFLAGS		=	-Wall -Wextra -Werror -g3
 INCLUDES	=	-I includes
@@ -45,5 +44,3 @@ re: fclean all
 run:
 	rm -f $(NAME)
 	@$(MAKE) all
-	@clear
-	@./$(NAME) 42.fdf
