@@ -14,20 +14,11 @@
 
 void		redraw(t_env *e)
 {
-//	static clock_t	time_old = 0;
-//	clock_t		time_now;
-
-//	time_now = clock();
-//	if ((time_now - time_old) > e->clocks)
-//	{
-//		e->time_old = time_now;
 		move_player(e);
 		draw_frame(e);
-//		SDL_delay(33333);
-//	}
 }
 
-void	draw_vscan_line(t_env *e, size_t x)
+/* void	draw_vscan_line(t_env *e, size_t x)
 {
 	int		colour;
 	int		i;
@@ -69,6 +60,23 @@ void	draw_vscan_line(t_env *e, size_t x)
 		*(int *)(e->pixels + px) = 0x00000000;
 		i++;
 	}
+} */
+
+void		draw_vscan_line(t_env *e, size_t x)
+{
+	int		tex_no;
+	int		tex_x;
+	double	wallx;
+
+	text_no = e->eorld_map[e->map.y][e->map.x] - 1;
+	if (e->side)
+		wallx = e->ray.loc.x + e->total_dist * e->ray.rot.x;
+	else
+		wallx = e->ray.loc.y + e->total_dist * e->ray.rot.y;
+	wallx -= (int)wallx;
+	tex_x = (int)(wallx * double(TEX_X);
+	if ((e->side && e->ray.rot.x < 0) || (!e->side && e->ray.rot.x > 0))
+		tex_x = TEX_X - tex_x - 1;
 }
 
 void		draw_frame(t_env *e)

@@ -7,32 +7,11 @@
 # include <time.h>
 # include <sys/time.h>
 # include <SDL2/SDL.h>
-# include <SDL2/SDL_stdinc.h>
 
 # define WIN_X	1600
 # define WIN_Y	900
-# define MACOSX
-
-# ifdef MACOSX
-#  define ESC_KEY	0x0035
-#  define PLUS_KEY	0x0018
-#  define MINUS_KEY	0x001B
-#  define W_KEY		0x0077
-#  define A_KEY		0x0061
-#  define S_KEY		0x0073
-#  define D_KEY		0x0064
-#  define SHIFT_KEY	0xFFE1
-# else
-#  define ESC_KEY	0xFF1B
-#  define PLUS_KEY	0x003D
-#  define MINUS_KEY	0x002D
-#  define W_KEY		0x0077
-#  define A_KEY		0x0061
-#  define S_KEY		0x0073
-#  define D_KEY		0x0064
-#  define SHIFT_KEY	0xFFE1
-# endif
-
+# define TEX_X	64
+# define TEX_Y	64
 
 typedef struct			s_v2d
 {
@@ -90,6 +69,7 @@ typedef struct			s_env
 	float				rot;
 	clock_t				time_old;
 	clock_t				clocks;
+	uint32_t			tex01[4][TEX_X][TEX_Y];
 }						t_env;
 
 /*
@@ -111,10 +91,11 @@ void					calc_line(t_env *e);
 */
 void					game_loop(t_env *e);
 void					rotate(t_env *e, float rot);
-/*
-** src/hooks.c
-*/
 void					set_run(t_env *e);
+/*
+** src/mouse.c
+*/
+void					mouse_move(int x);
 
 /*
 ** src/env_init.c

@@ -11,6 +11,7 @@
 /* ************************************************************************** */
 
 #include "wolf3d.h"
+#include <stdio.h>
 
 size_t		ft_get_time(void)
 {
@@ -72,10 +73,40 @@ void		fill_map(t_env *e)
 	}
 }
 
+int		load_texture(char *file, uint32_t tex[TEX_X][TEX_Y])
+{
+	int				fd;
+	uint32_t		px;
+	size_t			y;
+	size_t			x;
+	unsigned char	line[TEX_X * TEX_Y];
+
+	if ((fd = open(file, O_RDONLY)) == 0)
+		return (-1);
+	y = 0;
+	while (y < TEX_Y)
+	{
+		x = 0;
+		read(fd, &line, TEX_X * 4);
+		while (x < TEX_X)
+		{
+			px = 0;
+			px |= *(uint32_t *)(line + x * 4) & 0xFFFFFF;
+			px |= (0xFF - *(line + (x * 4 + 3))) << 24;
+			tex[x][y] = px;
+			++x;
+		}
+		++y;
+	}
+	return (1);
+}
+
+
 int			main(void)
 {
 	t_env	e;
 
+	ft_putstr("Activated\n");
 	init_env(&e);
 	e.win = SDL_CreateWindow("Wolf3D",
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -83,7 +114,15 @@ int			main(void)
 	e.rend = SDL_CreateRenderer(e.win, -1, SDL_RENDERER_ACCELERATED);
 	e.img = SDL_CreateTexture(e.rend, SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING, WIN_X, WIN_Y);
+
+	load_texture("mossy.data", e.tex[0]);
+	load_texture("angus.data", e.tex[4]);
+
+
+
+
 	game_loop(&e);
+	ft_putstr("Shutting down...\n");
 	SDL_ShowCursor(1);
 	SDL_DestroyTexture(e.img);
 	SDL_DestroyRenderer(e.rend);

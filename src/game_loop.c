@@ -33,7 +33,9 @@ void	game_loop(t_env *e)
 	SDL_Event	event;
 	int			loop;
 	int			mouse_x;
+	int			mouse_y;
 
+	(void)mouse_y;
 	SDL_ShowCursor(0);
 	SDL_SetRelativeMouseMode(1);
 	loop = 42;
@@ -52,11 +54,11 @@ void	game_loop(t_env *e)
 				key_up(event.key.keysym.sym, e);
 			else if (event.type == SDL_MOUSEMOTION)
 			{
-				rotate(e, (mouse_x - event.motion.x));
-				mouse_x = event.motion.x;
+				SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
+				rotate(e, -(mouse_x >> 3));
 			}
 		}
 		redraw(e);
-		SDL_Delay(33);
+		SDL_Delay(16);
 	}
 }
