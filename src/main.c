@@ -73,35 +73,64 @@ void		fill_map(t_env *e)
 	}
 }
 
-int		load_texture(char *file, uint32_t tex[TEX_X][TEX_Y])
+int		load_texture(char *file, unsigned char *tex)
 {
+ft_putstr("Loading texture\n");
 	int				fd;
-	uint32_t		px;
-	size_t			y;
-	size_t			x;
-	unsigned char	line[TEX_X << 2];
+	int				rderr;
+//	ssize_t			offset;
+//	unsigned char	*temp;
+//	uint32_t		px;
+//	size_t			y;
+//	size_t			x;
+//	unsigned char	line[TEX_X << 2];
 
-	if ((fd = open(file, O_RDONLY)) == 0)
+	if ((tex = (unsigned char *)malloc(TEX_X * TEX_Y * 4 + 1)) == NULL)
+	{
+		ft_putstr("Malloc failed for loading texture!\n");
+		return (-1);
+	}
+ft_putstr("MALLOC\n");
+	if ((fd = open(file, O_RDONLY)) == -1)
 	{
 		ft_putstr("Error loading texture\n");
 		return (-1);
 	}
-	y = 0;
-	while (y < TEX_Y)
+	if ((rderr = read(fd, &tex, TEX_X * TEX_Y * 4)) != TEX_X * TEX_Y * 4)
 	{
-		x = 0;
-		read(fd, &line, TEX_X << 2);
-		while (x < TEX_X)
-		{
-			px = 0;
-			px |= *(uint32_t *)(line + (x << 2)) & 0xFFFFFF;
-			px |= (0xFF - *(line + ((x << 2) + 3))) << 24;
-//printf("PX: %X : %X\n", 
-			tex[x][y] = px;
-			++x;
-		}
-		++y;
+		ft_printf("Texture read error: %d\n", rderr);
+		perror("");
+		close(fd);
+		return (-1);
 	}
+//ft_putstr("OPEN\n");
+//	temp = tex;
+//printf("Loading texture: %p\n", temp);
+//	while ((offset = read(fd, &temp, TEX_X * 4)) > 0)
+//	{
+//printf("OFFSET: %ld    ", offset);
+//		temp += offset;
+//printf("Loading texture: %p\n", temp);
+//	}
+
+//printf("File opened\n");
+//	y = 0;
+//	while (y < TEX_Y)
+//	{
+//		x = 0;
+//		tex[y] = (uint32_t *)malloc(sizeof(uint32_t) * TEX_X);
+//		read(fd, &line, TEX_X << 2);
+//		while (x < TEX_X)
+//		{
+//			px = 0;
+//			px |= *(uint32_t *)(line + (x << 2)) & 0xFFFFFF;
+//			px |= (0xFF - *(line + ((x << 2) + 3))) << 24;
+//printf("PX: %X : %X\n", (unsigned int)(y * TEX_Y + x), px);
+//			tex[x][y] = px;
+//			++x;
+//		}
+//		++y;
+//	}
 	close(fd);
 	return (1);
 }
@@ -120,7 +149,13 @@ int			main(void)
 	e.img = SDL_CreateTexture(e.rend, SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING, WIN_X, WIN_Y);
 
-	if (load_texture("mossy.data", e.tex[0]) == -1)
+	e.tex = (unsigned char **)malloc(sizeof(unsigned char *) * 5);
+	if (load_texture("brick_wall.data", e.tex[0]) == -1)
+		return (0);
+	ft_putstr("Loaded brick_wall.data");
+	if (load_texture("stonebrick_mossy.RGBA", e.tex[1]) == -1)
+		return (0);
+	if (load_texture("stonebrick_cracked.RGBA", e.tex[2]) == -1)
 		return (0);
 	if (load_texture("angus.data", e.tex[4]) == -1)
 		return (0);

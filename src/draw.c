@@ -18,50 +18,6 @@ void		redraw(t_env *e)
 		draw_frame(e);
 }
 
-/* void	draw_vscan_line(t_env *e, size_t x)
-{
-	int		colour;
-	int		i;
-	size_t	px;
-
-	if (e->world[e->map.y][e->map.x] == 1)
-		colour = 0x00FF0000;
-	else if (e->world[e->map.y][e->map.x] == 2)
-		colour = 0x0000FF00;
-	else if (e->world[e->map.y][e->map.x] == 3)
-		colour = 0x000000FF;
-	else if (e->world[e->map.y][e->map.x] == 4)
-		colour = 0x00FFFFFF;
-	else
-		colour = 0x00FF00FF;
-	if (e->side == 0)
-	{
-		colour -= colour & 0x0000007F;
-		colour -= colour & 0x00007F00;
-		colour -= colour & 0x007F0000;
-	}
-	i = 0;
-	while (i < e->start)
-	{
-		px = i * e->px_pitch + x * 4;
-		*(int *)(e->pixels + px) = 0x00000000;
-		i++;
-	}
-	while (e->start <= e->end)
-	{
-		px = e->start * e->px_pitch + x * 4;
-		*(int *)(e->pixels + px) = colour;
-		++e->start;
-	}
-	i = e->end + 1;
-	while (i < WIN_Y)
-	{
-		px = i * e->px_pitch + x * 4;
-		*(int *)(e->pixels + px) = 0x00000000;
-		i++;
-	}
-} */
-
 int			get_tex_x(t_env *e)
 {
 	int		tex_x;
@@ -78,11 +34,22 @@ int			get_tex_x(t_env *e)
 	return (tex_x);
 }
 
+uint32_t	get_colour(unsigned char *tex, int tex_x, int tex_y)
+{
+	uint32_t	colour;
+
+	colour = 0;
+	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 0] << 16;
+	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 1] << 8;
+	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 2];
+	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 3] << 24;
+	return (colour);
+}
+
 void		draw_vscan_line(t_env *e, size_t x)
 {
 	int			tex_x;
 	int			tex_no;
-	uint32_t	colour;
 	int			d;
 	int			tex_y;
 	size_t		px;
@@ -100,9 +67,8 @@ void		draw_vscan_line(t_env *e, size_t x)
 	{
 		d = (e->start << 8) - (WIN_Y << 7) + (e->line_height << 7);
 		tex_y = ((d * TEX_Y) / e->line_height) >> 8;
-		colour = e->tex[tex_no][tex_x][tex_y];
 		px = e->start * e->px_pitch + (x << 2);
-		*(int *)(e->pixels + px) = colour;
+		*(int *)(e->pixels + px) = get_colour(e->tex[tex_no], tex_x, tex_y);
 		++e->start;
 	}
 	d = e->end + 1;

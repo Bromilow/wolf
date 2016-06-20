@@ -10,8 +10,8 @@
 
 # define WIN_X	1600
 # define WIN_Y	900
-# define TEX_X	64
-# define TEX_Y	64
+# define TEX_X	1024
+# define TEX_Y	1024
 
 typedef struct			s_v2d
 {
@@ -22,7 +22,7 @@ typedef struct			s_v2d
 typedef struct			s_v2dint
 {
 	int					x;
-	int					y;
+	int				 	y;
 }						t_v2dint;
 
 typedef struct			s_ent
@@ -70,7 +70,7 @@ typedef struct			s_env
 	float				rot;
 	clock_t				time_old;
 	clock_t				clocks;
-	uint32_t			tex[5][TEX_X][TEX_Y];
+	unsigned char		**tex;
 }						t_env;
 
 /*
