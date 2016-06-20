@@ -46,6 +46,7 @@ typedef struct			s_env
 	t_v2d				plane;
 	t_v2d				camera;
 	float				total_dist;
+	int					line_height;
 	t_v2dint			step;
 	t_v2dint			map;
 	t_v2d				dist;
@@ -69,7 +70,7 @@ typedef struct			s_env
 	float				rot;
 	clock_t				time_old;
 	clock_t				clocks;
-	uint32_t			tex01[4][TEX_X][TEX_Y];
+	uint32_t			tex[5][TEX_X][TEX_Y];
 }						t_env;
 
 /*

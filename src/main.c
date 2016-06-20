@@ -79,25 +79,30 @@ int		load_texture(char *file, uint32_t tex[TEX_X][TEX_Y])
 	uint32_t		px;
 	size_t			y;
 	size_t			x;
-	unsigned char	line[TEX_X * TEX_Y];
+	unsigned char	line[TEX_X << 2];
 
 	if ((fd = open(file, O_RDONLY)) == 0)
+	{
+		ft_putstr("Error loading texture\n");
 		return (-1);
+	}
 	y = 0;
 	while (y < TEX_Y)
 	{
 		x = 0;
-		read(fd, &line, TEX_X * 4);
+		read(fd, &line, TEX_X << 2);
 		while (x < TEX_X)
 		{
 			px = 0;
-			px |= *(uint32_t *)(line + x * 4) & 0xFFFFFF;
-			px |= (0xFF - *(line + (x * 4 + 3))) << 24;
+			px |= *(uint32_t *)(line + (x << 2)) & 0xFFFFFF;
+			px |= (0xFF - *(line + ((x << 2) + 3))) << 24;
+//printf("PX: %X : %X\n", 
 			tex[x][y] = px;
 			++x;
 		}
 		++y;
 	}
+	close(fd);
 	return (1);
 }
 
@@ -115,8 +120,10 @@ int			main(void)
 	e.img = SDL_CreateTexture(e.rend, SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING, WIN_X, WIN_Y);
 
-	load_texture("mossy.data", e.tex[0]);
-	load_texture("angus.data", e.tex[4]);
+	if (load_texture("mossy.data", e.tex[0]) == -1)
+		return (0);
+	if (load_texture("angus.data", e.tex[4]) == -1)
+		return (0);
 
 
 

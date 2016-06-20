@@ -65,13 +65,11 @@ void		dda(t_env *e)
 
 void		calc_line(t_env *e)
 {
-	int		line_height;
-
-	line_height = (int)(WIN_Y / e->total_dist);
-	e->start = -line_height / 2 + WIN_Y / 2;
+	e->line_height = (int)(WIN_Y / e->total_dist);
+	e->start = -e->line_height / 2 + WIN_Y / 2;
 	if (e->start < 0)
 		e->start = 0;
-	e->end = line_height / 2 + WIN_Y / 2;
+	e->end = e->line_height / 2 + WIN_Y / 2;
 	if (e->end >= WIN_Y)
 		e->end = WIN_Y - 1;
 }
