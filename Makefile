@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: adippena <marvin@42.fr>                    +#+  +:+       +#+         #
+#    By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2016/06/05 13:18:57 by adippena          #+#    #+#              #
-#    Updated: 2016/06/19 18:13:33 by adippena         ###   ########.fr        #
+#    Created: 2016/11/24 09:06:32 by rbromilo          #+#    #+#              #
+#    Updated: 2016/11/24 09:27:12 by rbromilo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,23 +17,22 @@ SRC			=	src/main.c				\
 				src/draw.c				\
 				src/env_init.c			\
 				src/key_events.c		\
-				src/mouse.c				\
 				src/dda.c
 
 CFLAGS		=	-Wall -Wextra -Werror -g3
 INCLUDES	=	-I includes
 LIBFT		=	-I libft/includes -L libft -lft
-SDL_LINUX	=	-lSDL2
-SDL_MAC		=	-framework SDL2 -framework Cocoa
+SDL			=	-framework SDL2 -framework Cocoa
 
 all: $(NAME)
 
 $(NAME):
 	cd libft; make all
-	gcc $(CFLAGS) $(INCLUDES) $(SRC) $(SDL_LINUX) $(LIBFT) -o $(NAME) -lm
+	gcc $(CFLAGS) $(INCLUDES) $(SRC) $(SDL) $(LIBFT) -o $(NAME) -lm
 
 clean:
 	cd libft; make clean
+	rm -rf assembley
 
 fclean: clean
 	cd libft; make fclean
@@ -44,3 +43,11 @@ re: fclean all
 run:
 	rm -f $(NAME)
 	@$(MAKE) all
+	./$(NAME)
+
+assembley:
+	rm -f $(NAME)
+	cd libft; make all
+	gcc $(CFLAGS) $(INCLUDES) $(SRC) $(SDL_LINUX) $(LIBFT) -S -lm
+	mkdir -p assembley
+	mv *.s assembley

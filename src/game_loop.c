@@ -1,19 +1,30 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   game_loop.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/11/24 09:26:30 by rbromilo          #+#    #+#             */
+/*   Updated: 2016/11/24 10:33:24 by rbromilo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "wolf3d.h"
 
-void	rotate(t_env *e, float rot)
+void		rotate(t_env *e, double rot)
 {
-	float	old_player_rot;
-	float	old_plane_rot;
+	double	temp;
 
 	if (e->rot != -rot && e->rot != rot)
 		e->rot += rot;
-	rot *= 0.0174;
-	old_player_rot = e->player.rot.x;
+	rot *= 3.14159265359F / 180.0;
+	temp = e->player.rot.x;
 	e->player.rot.x = e->player.rot.x * cos(rot) - e->player.rot.y * sin(rot);
-	e->player.rot.y = old_player_rot * sin(rot) + e->player.rot.y * cos(rot);
-	old_plane_rot = e->plane.x;
+	e->player.rot.y = temp * sin(rot) + e->player.rot.y * cos(rot);
+	temp = e->plane.x;
 	e->plane.x = e->plane.x * cos(rot) - e->plane.y * sin(rot);
-	e->plane.y = old_plane_rot * sin(rot) + e->plane.y * cos(rot);
+	e->plane.y = temp * sin(rot) + e->plane.y * cos(rot);
 }
 
 void		set_run(t_env *e)
@@ -24,7 +35,7 @@ void		set_run(t_env *e)
 	if (e->run_cooldown	< now)
 	{
 		e->run_time = now + 5000000;
-		e->run_cooldown = now + 1000000;
+		e->run_cooldown = now + 10000000;
 	}
 }
 
@@ -32,10 +43,7 @@ void	game_loop(t_env *e)
 {
 	SDL_Event	event;
 	int			loop;
-	int			mouse_x;
-	int			mouse_y;
 
-	(void)mouse_y;
 	SDL_ShowCursor(0);
 	SDL_SetRelativeMouseMode(1);
 	loop = 42;
@@ -52,11 +60,6 @@ void	game_loop(t_env *e)
 					key_down(event.key.keysym.sym, e);
 			else if (event.type == SDL_KEYUP && event.key.repeat == 0)
 				key_up(event.key.keysym.sym, e);
-			else if (event.type == SDL_MOUSEMOTION)
-			{
-				SDL_GetRelativeMouseState(&mouse_x, &mouse_y);
-				rotate(e, -(mouse_x >> 3));
-			}
 		}
 		redraw(e);
 		SDL_Delay(16);

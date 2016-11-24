@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/06/19 16:58:29 by adippena          #+#    #+#             */
-/*   Updated: 2016/06/19 18:53:35 by adippena         ###   ########.fr       */
+/*   Created: 2016/11/24 09:26:38 by rbromilo          #+#    #+#             */
+/*   Updated: 2016/11/24 09:38:53 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void		fill_map(t_env *e)
 	size_t			row;
 	size_t			col;
 
-	fd = open("wolf.map", O_RDONLY);
+	fd = open("resources/maps/wolf.map", O_RDONLY);
 	ft_gnl(fd, &line);
 	if (fd < 0)
 	{
@@ -73,66 +73,56 @@ void		fill_map(t_env *e)
 	}
 }
 
-int		load_texture(char *file, unsigned char *tex)
+uint32_t	**load_texture(char *file)
 {
-ft_putstr("Loading texture\n");
 	int				fd;
-	int				rderr;
-//	ssize_t			offset;
-//	unsigned char	*temp;
-//	uint32_t		px;
-//	size_t			y;
-//	size_t			x;
-//	unsigned char	line[TEX_X << 2];
+	size_t			y;
+	size_t			x;
+	unsigned char	line[TEX * TEX];
+	uint32_t		**tex;
 
-	if ((tex = (unsigned char *)malloc(TEX_X * TEX_Y * 4 + 1)) == NULL)
+	ft_printf("Loading Texture : %s\n", file);
+	if ((tex = (uint32_t **)malloc(sizeof(uint32_t *) * TEX)) == NULL)
 	{
-		ft_putstr("Malloc failed for loading texture!\n");
-		return (-1);
+		perror("Malloc failed for loading texture");
+		return (NULL);
 	}
-ft_putstr("MALLOC\n");
 	if ((fd = open(file, O_RDONLY)) == -1)
 	{
-		ft_putstr("Error loading texture\n");
-		return (-1);
+		perror("Error opening texture file");
+		return (NULL);
 	}
-	if ((rderr = read(fd, &tex, TEX_X * TEX_Y * 4)) != TEX_X * TEX_Y * 4)
+	y = 0;
+	while (y < TEX)
 	{
-		ft_printf("Texture read error: %d\n", rderr);
-		perror("");
-		close(fd);
-		return (-1);
+		if ((tex[y] = (uint32_t *)malloc(sizeof(uint32_t) * TEX)) == NULL)
+		{
+			perror("Malloc failed for loading texture");
+			return (NULL);
+		}
+		++y;
 	}
-//ft_putstr("OPEN\n");
-//	temp = tex;
-//printf("Loading texture: %p\n", temp);
-//	while ((offset = read(fd, &temp, TEX_X * 4)) > 0)
-//	{
-//printf("OFFSET: %ld    ", offset);
-//		temp += offset;
-//printf("Loading texture: %p\n", temp);
-//	}
-
-//printf("File opened\n");
-//	y = 0;
-//	while (y < TEX_Y)
-//	{
-//		x = 0;
-//		tex[y] = (uint32_t *)malloc(sizeof(uint32_t) * TEX_X);
-//		read(fd, &line, TEX_X << 2);
-//		while (x < TEX_X)
-//		{
-//			px = 0;
-//			px |= *(uint32_t *)(line + (x << 2)) & 0xFFFFFF;
-//			px |= (0xFF - *(line + ((x << 2) + 3))) << 24;
-//printf("PX: %X : %X\n", (unsigned int)(y * TEX_Y + x), px);
-//			tex[x][y] = px;
-//			++x;
-//		}
-//		++y;
-//	}
+	y = 0;
+	while (y < TEX)
+	{
+		x = 0;
+		if ((read(fd, &line, (TEX * 4))) != (TEX * 4))
+		{
+			perror("Texture reading error");
+			close(fd);
+			return (NULL);
+		}
+		while (x < TEX)
+		{
+			tex[x][y] = 0;
+			tex[x][y] |= *(uint32_t *)(line + x * 4) & 0xFFFFFF;
+			tex[x][y] |= (0xFF - *(line + x * 4 + 3)) << 24;
+			++x;
+		}
+		++y;
+	}
 	close(fd);
-	return (1);
+	return (tex);
 }
 
 
@@ -146,28 +136,26 @@ int			main(void)
 		SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
 		WIN_X, WIN_Y, SDL_WINDOW_INPUT_GRABBED);
 	e.rend = SDL_CreateRenderer(e.win, -1, SDL_RENDERER_ACCELERATED);
-	e.img = SDL_CreateTexture(e.rend, SDL_PIXELFORMAT_ARGB8888,
+	e.img = SDL_CreateTexture(e.rend, SDL_PIXELFORMAT_ABGR8888,
 		SDL_TEXTUREACCESS_STREAMING, WIN_X, WIN_Y);
-
-	e.tex = (unsigned char **)malloc(sizeof(unsigned char *) * 5);
-	if (load_texture("brick_wall.data", e.tex[0]) == -1)
+	e.tex = (uint32_t ***)malloc(sizeof(uint32_t **) * 50);
+	if ((e.tex[0] = load_texture("resources/textures/brick_wall1024.data")) == NULL)
 		return (0);
-	ft_putstr("Loaded brick_wall.data");
-	if (load_texture("stonebrick_mossy.RGBA", e.tex[1]) == -1)
+	if ((e.tex[1] = load_texture("resources/textures/mossy_wall1024.data")) == NULL)
 		return (0);
-	if (load_texture("stonebrick_cracked.RGBA", e.tex[2]) == -1)
+	if ((e.tex[2] = load_texture("resources/textures/mossy_cracked_wall1024.data")) == NULL)
 		return (0);
-	if (load_texture("angus.data", e.tex[4]) == -1)
+	if ((e.tex[3] = load_texture("resources/textures/floor1024.data")) == NULL)
 		return (0);
-
-
-
-
+	if ((e.tex[4] = load_texture("resources/textures/roof1024.data")) == NULL)
+		return (0);
+	if ((e.tex[5] = load_texture("resources/textures/chizzeled1024.data")) == NULL)
+		return (0);
 	game_loop(&e);
 	ft_putstr("Shutting down...\n");
 	SDL_ShowCursor(1);
 	SDL_DestroyTexture(e.img);
-	SDL_DestroyRenderer(e.rend);
+//	SDL_DestroyRenderer(e.rend);
 	SDL_DestroyWindow(e.win);
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/06/19 16:58:51 by adippena          #+#    #+#             */
-/*   Updated: 2016/06/19 17:01:23 by adippena         ###   ########.fr       */
+/*   Created: 2016/11/24 09:26:28 by rbromilo          #+#    #+#             */
+/*   Updated: 2016/11/24 10:32:13 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,12 @@ void		init_env(t_env *e)
 	e->key.a_key = 0;
 	e->key.s_key = 0;
 	e->key.d_key = 0;
+	e->key.l_key = 0;
+	e->key.r_key = 0;
 	e->rot = 0;
-	e->clocks = CLOCKS_PER_SEC >> 5;
-	e->time_old = clock();
+	e->time_old = ft_get_time();
 	rotate(e, 270);
+	e->tick = 0;
+	e->activated = 0;
 	fill_map(e);
 }

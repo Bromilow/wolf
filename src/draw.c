@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/06/19 17:04:00 by adippena          #+#    #+#             */
-/*   Updated: 2016/06/19 18:08:52 by adippena         ###   ########.fr       */
+/*   Created: 2016/11/24 09:26:21 by rbromilo          #+#    #+#             */
+/*   Updated: 2016/11/24 09:26:22 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,29 +21,63 @@ void		redraw(t_env *e)
 int			get_tex_x(t_env *e)
 {
 	int		tex_x;
-	double	wallx;
 
 	if (e->side)
-		wallx = e->ray.loc.x + e->total_dist * e->ray.rot.x;
+		e->wall.x = e->ray.loc.x + e->total_dist * e->ray.rot.x;
 	else
-		wallx = e->ray.loc.y + e->total_dist * e->ray.rot.y;
-	wallx -= floor(wallx);
-	tex_x = (int)(wallx * (double)(TEX_X));
+		e->wall.x = e->ray.loc.y + e->total_dist * e->ray.rot.y;
+	e->wall.x -= (int)e->wall.x;
+	tex_x = (int)(e->wall.x * (double)(TEX));
 	if ((e->side && e->ray.rot.y < 0) || (!e->side && e->ray.rot.x > 0))
-		tex_x = TEX_X - tex_x - 1;
+		tex_x = TEX - tex_x - 1;
 	return (tex_x);
 }
 
-uint32_t	get_colour(unsigned char *tex, int tex_x, int tex_y)
+void		get_floor_xy(t_env *e, t_v2d *floor_wall)
 {
-	uint32_t	colour;
+	if (e->side == 0 && e->ray.rot.x > 0)
+	{
+		floor_wall->x = e->map.x;
+		floor_wall->y = e->map.y + e->wall.x;
+	}
+	else if (e->side == 0 && e->ray.rot.x < 0)
+	{
+		floor_wall->x = e->map.x + 1.0;
+		floor_wall->y = e->map.y + e->wall.x;
+	}
+	else if (e->side == 1 && e->ray.rot.y > 0)
+	{
+		floor_wall->x = e->map.x + e->wall.x;
+		floor_wall->y = e->map.y;
+	}
+	else
+	{
+		floor_wall->x = e->map.x + e->wall.x;
+		floor_wall->y = e->map.y + 1.0;
+	}
+}
 
-	colour = 0;
-	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 0] << 16;
-	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 1] << 8;
-	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 2];
-	colour |= tex[tex_x * TEX_Y + tex_y * 4 + 3] << 24;
-	return (colour);
+void		cast_floor(t_env *e, size_t x)
+{
+	t_v2d		floor_wall;
+	double		d;
+	t_v2dint	floor_tex;
+
+	get_floor_xy(e, &floor_wall);
+	while (++e->end < WIN_Y)
+	{
+		d = ((double)WIN_Y / ((double)(e->end << 1) - (double)WIN_Y)) /
+			e->total_dist;
+		floor_tex.x = (int)((d * floor_wall.x + (1.0 - d) * e->player.loc.x) *
+			(double)TEX) % TEX;
+		floor_tex.y = (int)((d * floor_wall.y + (1.0 - d) * e->player.loc.y) *
+			(double)TEX) % TEX;
+		*(int *)(e->pixels + (e->end * e->px_pitch + (x * 4))) =
+			e->tex[3][floor_tex.x][floor_tex.y];
+		*(int *)(e->pixels + ((WIN_Y - e->end) * e->px_pitch + (x * 4))) =
+			e->tex[4][floor_tex.x][floor_tex.y];
+
+	}
 }
 
 void		draw_vscan_line(t_env *e, size_t x)
@@ -56,28 +90,15 @@ void		draw_vscan_line(t_env *e, size_t x)
 
 	tex_no = e->world[e->map.y][e->map.x] - 1;
 	tex_x = get_tex_x(e);
-	d = 0;
-	while (d < e->start)
-	{
-		px = d * e->px_pitch + (x << 2);
-		*(int *)(e->pixels + px) = 0x00000000;
-		d++;
-	}
 	while (e->start <= e->end)
 	{
 		d = (e->start << 8) - (WIN_Y << 7) + (e->line_height << 7);
-		tex_y = ((d * TEX_Y) / e->line_height) >> 8;
-		px = e->start * e->px_pitch + (x << 2);
-		*(int *)(e->pixels + px) = get_colour(e->tex[tex_no], tex_x, tex_y);
+		tex_y = ((d * TEX) / e->line_height) >> 8;
+		px = e->start * e->px_pitch + (x * 4);
+		*(int *)(e->pixels + px) = e->tex[tex_no][tex_x][tex_y];
 		++e->start;
 	}
-	d = e->end + 1;
-	while (d < WIN_Y)
-	{
-		px = d * e->px_pitch + x * 4;
-		*(int *)(e->pixels + px) = 0x00000000;
-		d++;
-	}
+	cast_floor(e, x);
 }
 
 void		draw_frame(t_env *e)
@@ -91,8 +112,10 @@ void		draw_frame(t_env *e)
 		calc_ray_loc_rot(e, x);
 		e->map.x = (int)e->ray.loc.x;
 		e->map.y = (int)e->ray.loc.y;
-		e->delta_dist.x = sqrt(1 + (e->ray.rot.y * e->ray.rot.y) / (e->ray.rot.x * e->ray.rot.x));
-		e->delta_dist.y = sqrt(1 + (e->ray.rot.x * e->ray.rot.x) / (e->ray.rot.y * e->ray.rot.y));
+		e->delta_dist.x = sqrt(1 + (e->ray.rot.y * e->ray.rot.y) /
+			(e->ray.rot.x * e->ray.rot.x));
+		e->delta_dist.y = sqrt(1 + (e->ray.rot.x * e->ray.rot.x) /
+			(e->ray.rot.y * e->ray.rot.y));
 		calc_init_dist(e);
 		dda(e);
 		calc_line(e);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   key_events.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: adippena <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/06/19 17:01:45 by adippena          #+#    #+#             */
-/*   Updated: 2016/06/19 18:46:00 by adippena         ###   ########.fr       */
+/*   Created: 2016/11/24 09:26:34 by rbromilo          #+#    #+#             */
+/*   Updated: 2016/11/24 10:27:10 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@ void	key_down(SDL_Keycode key, t_env *e)
 		e->key.d_key = 1;
 	else if (key == SDLK_LSHIFT)
 		set_run(e);
+	else if (key == SDLK_LEFT)
+		e->key.l_key = 1;
+	else if (key == SDLK_RIGHT)
+		e->key.r_key = 1;
 }
 
 void	key_up(SDL_Keycode key, t_env *e)
@@ -36,6 +40,10 @@ void	key_up(SDL_Keycode key, t_env *e)
 		e->key.s_key = 0;
 	else if (key == SDLK_d)
 		e->key.d_key = 0;
+	else if (key == SDLK_LEFT)
+		e->key.l_key = 0;
+	else if (key == SDLK_RIGHT)
+		e->key.r_key = 0;
 }
 
 void	move_player(t_env *e)
@@ -43,12 +51,12 @@ void	move_player(t_env *e)
 	float	rotx;
 	float	roty;
 
-	if (e->run_time > ft_get_time())
+	if (e->run)
 	{
 		rotx = e->player.rot.x / 8.0F;
 		roty = e->player.rot.y / 8.0F;
 		rotate(e, -e->rot);
-		e->plane.y = 0.61;
+		e->plane.y = 0.66;
 		rotate(e, e->rot);
 	}
 	else
@@ -61,30 +69,37 @@ void	move_player(t_env *e)
 	}
 	if (e->key.w_key)
 	{
-		if (!e->world[(int)e->player.loc.y][(int)(e->player.loc.x + rotx)])
 			e->player.loc.x += rotx;
-		if (!e->world[(int)(e->player.loc.y + roty)][(int)e->player.loc.x])
 			e->player.loc.y += roty;
 	}
-	if (e->key.s_key)
+	else if (e->key.s_key)
 	{
-		if (!e->world[(int)e->player.loc.y][(int)(e->player.loc.x - rotx)])
 			e->player.loc.x -= rotx;
-		if (!e->world[(int)(e->player.loc.y - roty)][(int)e->player.loc.x])
 			e->player.loc.y -= roty;
 	}
 	if (e->key.a_key)
 	{
-		if (!e->world[(int)e->player.loc.y][(int)(e->player.loc.x - roty)])
 			e->player.loc.x -= roty;
-		if (!e->world[(int)(e->player.loc.y + rotx)][(int)e->player.loc.x])
 			e->player.loc.y += rotx;
 	}
-	if (e->key.d_key)
+	else if (e->key.d_key)
 	{
-		if (!e->world[(int)e->player.loc.y][(int)(e->player.loc.x + roty)])
 			e->player.loc.x += roty;
-		if (!e->world[(int)(e->player.loc.y - rotx)][(int)e->player.loc.x])
 			e->player.loc.y -= rotx;
 	}
+	if (e->key.w_key || e->key.s_key || e->key.a_key || e->key.d_key)
+	{
+		while (e->world[(int)(e->player.loc.y + 0.25)][(int)e->player.loc.x])
+			e->player.loc.y -= 0.001;
+		while (e->world[(int)(e->player.loc.y - 0.25)][(int)e->player.loc.x])
+			e->player.loc.y += 0.001;
+		while (e->world[(int)e->player.loc.y][(int)(e->player.loc.x + 0.25)])
+			e->player.loc.x -= 0.001;
+		while (e->world[(int)e->player.loc.y][(int)(e->player.loc.x - 0.25)])
+			e->player.loc.x += 0.001;
+	}
+	if (e->key.l_key)
+		rotate(e, 5.0);
+	if (e->key.r_key)
+		rotate(e, -5.0);
 }
