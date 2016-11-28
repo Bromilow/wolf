@@ -6,7 +6,7 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:24:40 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/28 13:36:11 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/28 14:00:34 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <math.h>
 # include <time.h>
 # include <sys/time.h>
-# include "SDL.h"
+# include <SDL2/SDL.h>
 
 # define WIN_X	500
 # define WIN_Y	350
