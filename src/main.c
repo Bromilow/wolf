@@ -6,7 +6,7 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:26:38 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/24 09:38:53 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/28 13:29:01 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,7 +155,7 @@ int			main(void)
 	ft_putstr("Shutting down...\n");
 	SDL_ShowCursor(1);
 	SDL_DestroyTexture(e.img);
-//	SDL_DestroyRenderer(e.rend);
+	SDL_DestroyRenderer(e.rend);
 	SDL_DestroyWindow(e.win);
 	return (0);
 }
