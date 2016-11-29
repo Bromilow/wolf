@@ -1,0 +1,9 @@
+_Store
+.DS_Store?
+._*
+*.dSYM
+.nfs.*
+.Trashes
+.*.swp
+*.o
+libft.a
