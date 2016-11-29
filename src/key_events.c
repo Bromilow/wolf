@@ -6,7 +6,7 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:26:34 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/28 13:29:37 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/29 11:22:32 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,30 @@ void	key_up(SDL_Keycode key, t_env *e)
 		e->key.r_key = 0;
 }
 
+void	move(t_env *e, float rotx, float roty)
+{
+	if (e->key.w_key)
+	{
+		e->player.loc.x += rotx;
+		e->player.loc.y += roty;
+	}
+	else if (e->key.s_key)
+	{
+		e->player.loc.x -= rotx;
+		e->player.loc.y -= roty;
+	}
+	if (e->key.a_key)
+	{
+		e->player.loc.x -= roty;
+		e->player.loc.y += rotx;
+	}
+	else if (e->key.d_key)
+	{
+		e->player.loc.x += roty;
+		e->player.loc.y -= rotx;
+	}
+}
+
 void	move_player(t_env *e)
 {
 	float	rotx;
@@ -53,26 +77,7 @@ void	move_player(t_env *e)
 
 	rotx = e->player.rot.x / 8.0F;
 	roty = e->player.rot.y / 8.0F;
-	if (e->key.w_key)
-	{
-			e->player.loc.x += rotx;
-			e->player.loc.y += roty;
-	}
-	else if (e->key.s_key)
-	{
-			e->player.loc.x -= rotx;
-			e->player.loc.y -= roty;
-	}
-	if (e->key.a_key)
-	{
-			e->player.loc.x -= roty;
-			e->player.loc.y += rotx;
-	}
-	else if (e->key.d_key)
-	{
-			e->player.loc.x += roty;
-			e->player.loc.y -= rotx;
-	}
+	move(e, rotx, roty);
 	if (e->key.w_key || e->key.s_key || e->key.a_key || e->key.d_key)
 	{
 		while (e->world[(int)(e->player.loc.y + 0.25)][(int)e->player.loc.x])

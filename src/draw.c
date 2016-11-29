@@ -6,17 +6,11 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:26:21 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/24 09:26:22 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/29 11:19:46 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf3d.h"
-
-void		redraw(t_env *e)
-{
-		move_player(e);
-		draw_frame(e);
-}
 
 int			get_tex_x(t_env *e)
 {
@@ -76,7 +70,6 @@ void		cast_floor(t_env *e, size_t x)
 			e->tex[3][floor_tex.x][floor_tex.y];
 		*(int *)(e->pixels + ((WIN_Y - e->end) * e->px_pitch + (x * 4))) =
 			e->tex[4][floor_tex.x][floor_tex.y];
-
 	}
 }
 

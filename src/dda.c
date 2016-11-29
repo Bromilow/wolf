@@ -6,7 +6,7 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:26:15 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/24 10:10:27 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/29 11:22:12 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,14 @@ void		dda(t_env *e)
 			e->map.y += e->step.y;
 			e->side = 1;
 		}
-		if (e->world[e->map.y][e->map.x] > 0)
-			hit = 1;
+		hit = (e->world[e->map.y][e->map.x] > 0) ? 1 : hit;
 	}
 	if (e->side == 0)
-		e->total_dist = (e->map.x - e->ray.loc.x + (1 - e->step.x) / 2) / e->ray.rot.x;
+		e->total_dist =
+			(e->map.x - e->ray.loc.x + (1 - e->step.x) / 2) / e->ray.rot.x;
 	else
-		e->total_dist = (e->map.y - e->ray.loc.y + (1 - e->step.y) / 2) / e->ray.rot.y;
+		e->total_dist =
+			(e->map.y - e->ray.loc.y + (1 - e->step.y) / 2) / e->ray.rot.y;
 }
 
 void		calc_line(t_env *e)

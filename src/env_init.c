@@ -6,7 +6,7 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:26:28 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/24 10:32:13 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/28 17:49:58 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void		init_env(t_env *e)
 	e->player.rot.x = -1;
 	e->player.rot.y = 0;
 	e->plane.x = 0;
-	e->plane.y = 0.69 ;
+	e->plane.y = 0.69;
 	e->key.w_key = 0;
 	e->key.a_key = 0;
 	e->key.s_key = 0;

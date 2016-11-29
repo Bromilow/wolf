@@ -6,7 +6,7 @@
 /*   By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/24 09:26:30 by rbromilo          #+#    #+#             */
-/*   Updated: 2016/11/24 10:33:24 by rbromilo         ###   ########.fr       */
+/*   Updated: 2016/11/28 17:46:00 by rbromilo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,14 +32,14 @@ void		set_run(t_env *e)
 	size_t	now;
 
 	now = ft_get_time();
-	if (e->run_cooldown	< now)
+	if (e->run_cooldown < now)
 	{
 		e->run_time = now + 5000000;
 		e->run_cooldown = now + 10000000;
 	}
 }
 
-void	game_loop(t_env *e)
+void		game_loop(t_env *e)
 {
 	SDL_Event	event;
 	int			loop;

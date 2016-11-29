@@ -6,7 +6,7 @@
 #    By: rbromilo <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2016/11/24 09:06:32 by rbromilo          #+#    #+#              #
-#    Updated: 2016/11/24 09:27:12 by rbromilo         ###   ########.fr        #
+#    Updated: 2016/11/29 11:25:39 by rbromilo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,8 @@ SRC			=	src/main.c				\
 				src/draw.c				\
 				src/env_init.c			\
 				src/key_events.c		\
-				src/dda.c
+				src/dda.c				\
+				src/w3d.c
 
 CFLAGS		=	-Wall -Wextra -Werror -g3
 INCLUDES	=	-I includes
